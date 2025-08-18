@@ -1,9 +1,13 @@
 package token
 
+type TokenType int
+
 const (
-	ASTERISK = "*"
-	HASHTAG  = "#"
-	EQUAL    = "="
-	BANG     = "!"
-	DASH     = "-"
+	TokenEOF TokenType = iota
+	TokenHeader
+	TokenParagraph
+	TokenText
+	TokenBold
+	TokenItalic
+	TokenCodeSpan
 )
