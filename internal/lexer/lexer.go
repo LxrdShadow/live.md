@@ -22,21 +22,38 @@ func (l *Lexer) Lex() []token.Token {
 	scanner := bufio.NewScanner(r)
 
 	for scanner.Scan() {
-		tokens = append(tokens, l.LexLine(scanner.Text()))
+		tokens = append(tokens, l.lexLine(scanner.Text()))
 	}
 
 	return tokens
 }
 
-func (l *Lexer) LexLine(line string) token.Token {
-	tok := token.Token{}
-	pos := 0
+func (l *Lexer) lexLine(line string) token.Token {
+	var tok token.Token
 
-	if len(line) > 0 && line[pos] == '#' {
-		tok.Type = token.TokenHeader
+	if len(line) > 0 && line[0] == '#' {
+		tok = l.lexHeader(line)
 	} else {
 		tok.Type = token.TokenParagraph
 	}
 
 	return tok
+}
+
+func (l *Lexer) lexHeader(line string) token.Token {
+	pos := 0
+	level := 0
+
+	for pos < len(line) && line[pos] == '#' {
+		level++
+		pos++
+	}
+
+	if pos < len(line) && line[pos] == ' ' {
+		pos++ // Skip the space
+
+		return token.Token{Type: token.TokenHeader, Value: line[pos:], Level: min(level, 6)}
+	} else {
+		return token.Token{Type: token.TokenText, Value: line}
+	}
 }
