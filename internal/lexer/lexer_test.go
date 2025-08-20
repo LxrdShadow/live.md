@@ -28,3 +28,21 @@ func TestLexingHeader(t *testing.T) {
 		t.Fatalf("value of token child is not \"Hello world\". got=%s", tokens[0].Children[0].Value)
 	}
 }
+
+func TestLexingBold(t *testing.T) {
+	input := "# Hello **world**!"
+	fmt.Println(len(input))
+
+	l := New(input)
+	tokens := l.Lex()
+
+	if len(tokens) != 1 {
+		t.Fatalf("len(tokens) is not %d. got=%d", 1, len(tokens))
+	}
+
+	headerTokenChildren := tokens[0].Children
+	fmt.Println(headerTokenChildren)
+	if len(headerTokenChildren) != 3 {
+		t.Fatalf("len(headerTokenChildren) is not %d. got=%d", 3, len(headerTokenChildren))
+	}
+}
