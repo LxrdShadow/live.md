@@ -31,7 +31,6 @@ func TestLexingHeader(t *testing.T) {
 
 func TestLexingBold(t *testing.T) {
 	input := "# Hello **world**!"
-	fmt.Println(len(input))
 
 	l := New(input)
 	tokens := l.Lex()
@@ -41,15 +40,13 @@ func TestLexingBold(t *testing.T) {
 	}
 
 	headerTokenChildren := tokens[0].Children
-	fmt.Println(headerTokenChildren)
 	if len(headerTokenChildren) != 3 {
 		t.Fatalf("len(headerTokenChildren) is not %d. got=%d", 3, len(headerTokenChildren))
 	}
 }
 
-func TestLexingItalic(t *testing.T) {
-	input := "# Hello *world*!"
-	fmt.Println(len(input))
+func TestLexingBoldItalicParagraph(t *testing.T) {
+	input := "Hello **miserable** *world*!"
 
 	l := New(input)
 	tokens := l.Lex()
@@ -58,9 +55,8 @@ func TestLexingItalic(t *testing.T) {
 		t.Fatalf("len(tokens) is not %d. got=%d", 1, len(tokens))
 	}
 
-	headerTokenChildren := tokens[0].Children
-	fmt.Println(headerTokenChildren)
-	if len(headerTokenChildren) != 3 {
-		t.Fatalf("len(headerTokenChildren) is not %d. got=%d", 3, len(headerTokenChildren))
+	paragraphTokenChildren := tokens[0].Children
+	if len(paragraphTokenChildren) != 5 {
+		t.Fatalf("len(headerTokenChildren) is not %d. got=%d", 5, len(paragraphTokenChildren))
 	}
 }
