@@ -3,7 +3,6 @@ package lexer
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"strings"
 	"unicode/utf8"
 
@@ -32,13 +31,12 @@ func (l *Lexer) Lex() []token.Token {
 }
 
 func (l *Lexer) lexLine(line string) token.Token {
-	fmt.Println("lex line:", len(line))
 	var tok token.Token
 
 	if len(line) > 0 && line[0] == '#' {
 		tok = l.lexHeader(line)
 	} else {
-		tok.Type = token.TokenParagraph
+		tok = token.Token{Type: token.TokenParagraph, Children: l.lexInline(line)}
 	}
 
 	return tok
