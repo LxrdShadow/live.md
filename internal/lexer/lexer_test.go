@@ -1,7 +1,6 @@
 package lexer
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/LxrdShadow/live.md/internal/token"
@@ -16,11 +15,11 @@ func TestLexingHeader(t *testing.T) {
 		t.Fatalf("len(tokens) is not %d. got=%d", 1, len(tokens))
 	}
 
-	if tokens[0].Type != token.TokenHeader {
+	if tokens[0].Type != token.HEADER {
 		t.Fatalf("token is not HEADER. got=%s", tokens[0])
 	}
 
-	if tokens[0].Children[0].Type != token.TokenText {
+	if tokens[0].Children[0].Type != token.TEXT {
 		t.Fatalf("token child is not TEXT. got=%s", tokens[0].Children[0])
 	}
 
