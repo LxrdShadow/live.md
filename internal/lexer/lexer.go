@@ -80,10 +80,10 @@ func (l *Lexer) lexInline(line string) []token.Token {
 		r, size := utf8.DecodeRuneInString(line[i:])
 
 		switch r {
-		// Handle bold text
 		case '*':
+			// Case of bold text
+			flushBuf(token.TokenText)
 			if i+1 < len(line) && line[i+1] == '*' {
-				flushBuf(token.TokenText)
 				end := l.findClosing(line, i+2, "**")
 
 				if end != -1 {
@@ -95,6 +95,20 @@ func (l *Lexer) lexInline(line string) []token.Token {
 					i = end + len("**")
 				} else {
 					buf = append(buf, '*', '*')
+					i += 2
+				}
+			} else { // Case of italic text
+				end := l.findClosing(line, i+2, "*")
+
+				if end != -1 {
+					tok := token.Token{
+						Type:     token.TokenItalic,
+						Children: l.lexInline(line[i+1 : end]),
+					}
+					tokens = append(tokens, tok)
+					i = end + len("*")
+				} else {
+					buf = append(buf, '*')
 					i += 2
 				}
 			}
@@ -109,6 +123,10 @@ func (l *Lexer) lexInline(line string) []token.Token {
 }
 
 func (l *Lexer) findClosing(s string, start int, delim string) int {
+	if start > len(s) {
+		return -1
+	}
+
 	idx := strings.Index(s[start:], delim)
 	if idx == -1 {
 		return idx
