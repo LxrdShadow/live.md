@@ -35,7 +35,7 @@ func (t Token) String() string {
 	}
 
 	if t.Value != "" {
-		return fmt.Sprintf("%s(%s)", t.Type, t.Value)
+		return fmt.Sprintf("%s(\"%s\")", t.Type, t.Value)
 	}
 
 	return string(t.Type) // Fallback
