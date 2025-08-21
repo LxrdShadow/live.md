@@ -46,3 +46,21 @@ func TestLexingBold(t *testing.T) {
 		t.Fatalf("len(headerTokenChildren) is not %d. got=%d", 3, len(headerTokenChildren))
 	}
 }
+
+func TestLexingItalic(t *testing.T) {
+	input := "# Hello *world*!"
+	fmt.Println(len(input))
+
+	l := New(input)
+	tokens := l.Lex()
+
+	if len(tokens) != 1 {
+		t.Fatalf("len(tokens) is not %d. got=%d", 1, len(tokens))
+	}
+
+	headerTokenChildren := tokens[0].Children
+	fmt.Println(headerTokenChildren)
+	if len(headerTokenChildren) != 3 {
+		t.Fatalf("len(headerTokenChildren) is not %d. got=%d", 3, len(headerTokenChildren))
+	}
+}
