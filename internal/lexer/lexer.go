@@ -36,7 +36,7 @@ func (l *Lexer) lexLine(line string) token.Token {
 	if len(line) > 0 && line[0] == '#' {
 		tok = l.lexHeader(line)
 	} else {
-		tok = token.Token{Type: token.TokenParagraph, Children: l.lexInline(line)}
+		tok = token.Token{Type: token.PARAGRAPH, Children: l.lexInline(line)}
 	}
 
 	return tok
@@ -54,9 +54,9 @@ func (l *Lexer) lexHeader(line string) token.Token {
 	if pos < len(line) && line[pos] == ' ' {
 		pos++ // Skip the space
 
-		return token.Token{Type: token.TokenHeader, Children: l.lexInline(line[pos:]), Level: min(level, 6)}
+		return token.Token{Type: token.HEADER, Children: l.lexInline(line[pos:]), Level: min(level, 6)}
 	} else {
-		return token.Token{Type: token.TokenText, Value: line}
+		return token.Token{Type: token.TEXT, Value: line}
 	}
 }
 
@@ -80,13 +80,13 @@ func (l *Lexer) lexInline(line string) []token.Token {
 		switch r {
 		case '*':
 			// Case of bold text
-			flushBuf(token.TokenText)
+			flushBuf(token.TEXT)
 			if i+1 < len(line) && line[i+1] == '*' {
 				end := l.findClosing(line, i+2, "**")
 
 				if end != -1 {
 					tok := token.Token{
-						Type:     token.TokenBold,
+						Type:     token.BOLD,
 						Children: l.lexInline(line[i+2 : end]),
 					}
 					tokens = append(tokens, tok)
@@ -100,7 +100,7 @@ func (l *Lexer) lexInline(line string) []token.Token {
 
 				if end != -1 {
 					tok := token.Token{
-						Type:     token.TokenItalic,
+						Type:     token.ITALIC,
 						Children: l.lexInline(line[i+1 : end]),
 					}
 					tokens = append(tokens, tok)
@@ -116,7 +116,7 @@ func (l *Lexer) lexInline(line string) []token.Token {
 		}
 	}
 
-	flushBuf(token.TokenText)
+	flushBuf(token.TEXT)
 	return tokens
 }
 
