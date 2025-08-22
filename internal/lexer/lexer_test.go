@@ -56,6 +56,26 @@ func TestLexingBoldItalicParagraph(t *testing.T) {
 
 	paragraphTokenChildren := tokens[0].Children
 	if len(paragraphTokenChildren) != 5 {
-		t.Fatalf("len(headerTokenChildren) is not %d. got=%d", 5, len(paragraphTokenChildren))
+		t.Fatalf("len(paragraphTokenChildren) is not %d. got=%d", 5, len(paragraphTokenChildren))
+	}
+}
+
+func TestLexingCodeSpan(t *testing.T) {
+	input := "`this is a codespan`"
+
+	l := New(input)
+	tokens := l.Lex()
+
+	if len(tokens) != 1 {
+		t.Fatalf("len(tokens) is not %d. got=%d", 1, len(tokens))
+	}
+
+	paragraphTokenChildren := tokens[0].Children
+	if len(paragraphTokenChildren) != 1 {
+		t.Fatalf("len(headerTokenChildren) is not %d. got=%d", 1, len(paragraphTokenChildren))
+	}
+
+	if paragraphTokenChildren[0].Type != token.CODESPAN {
+		t.Fatalf("paragraphTokenChildren[0] is not token.CODESPAN. got=%s", paragraphTokenChildren[0])
 	}
 }
