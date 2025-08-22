@@ -1,15 +1,20 @@
 package token
 
-type TokenType int
+import (
+	"fmt"
+	"strings"
+)
+
+type TokenType string
 
 const (
-	TokenEOF TokenType = iota
-	TokenHeader
-	TokenParagraph
-	TokenText
-	TokenBold
-	TokenItalic
-	TokenCodeSpan
+	EOF       = "EOF"
+	HEADER    = "HEADER"
+	PARAGRAPH = "PARAGRAPH"
+	TEXT      = "TEXT"
+	BOLD      = "BOLD"
+	ITALIC    = "ITALIC"
+	CODESPAN  = "CODESPAN"
 )
 
 type Token struct {
@@ -20,22 +25,18 @@ type Token struct {
 }
 
 func (t Token) String() string {
-	switch t.Type {
-	case TokenHeader:
-		return "HEADER(" + string(rune('0'+t.Level)) + ", " + t.Value + ")"
-	case TokenParagraph:
-		return "PARAGRAPH(" + t.Value + ")"
-	case TokenText:
-		return "TEXT(" + t.Value + ")"
-	case TokenBold:
-		return "BOLD(" + t.Value + ")"
-	case TokenItalic:
-		return "ITALIC(" + t.Value + ")"
-	case TokenCodeSpan:
-		return "CODESPAN(" + t.Value + ")"
-	case TokenEOF:
-		return "EOF"
+	if len(t.Children) > 0 {
+		childrenStr := []string{}
+
+		for _, child := range t.Children {
+			childrenStr = append(childrenStr, child.String())
+		}
+		return fmt.Sprintf("%s[%s]", t.Type, strings.Join(childrenStr, ", "))
 	}
 
-	return "UNKNOWN(" + t.Value + ")"
+	if t.Value != "" {
+		return fmt.Sprintf("%s(\"%s\")", t.Type, t.Value)
+	}
+
+	return string(t.Type) // Fallback
 }

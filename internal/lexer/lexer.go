@@ -3,7 +3,6 @@ package lexer
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"strings"
 	"unicode/utf8"
 
@@ -32,13 +31,12 @@ func (l *Lexer) Lex() []token.Token {
 }
 
 func (l *Lexer) lexLine(line string) token.Token {
-	fmt.Println("lex line:", len(line))
 	var tok token.Token
 
 	if len(line) > 0 && line[0] == '#' {
 		tok = l.lexHeader(line)
 	} else {
-		tok.Type = token.TokenParagraph
+		tok = token.Token{Type: token.PARAGRAPH, Children: l.lexInline(line)}
 	}
 
 	return tok
@@ -56,9 +54,9 @@ func (l *Lexer) lexHeader(line string) token.Token {
 	if pos < len(line) && line[pos] == ' ' {
 		pos++ // Skip the space
 
-		return token.Token{Type: token.TokenHeader, Children: l.lexInline(line[pos:]), Level: min(level, 6)}
+		return token.Token{Type: token.HEADER, Children: l.lexInline(line[pos:]), Level: min(level, 6)}
 	} else {
-		return token.Token{Type: token.TokenText, Value: line}
+		return token.Token{Type: token.TEXT, Value: line}
 	}
 }
 
@@ -80,21 +78,35 @@ func (l *Lexer) lexInline(line string) []token.Token {
 		r, size := utf8.DecodeRuneInString(line[i:])
 
 		switch r {
-		// Handle bold text
 		case '*':
+			// Case of bold text
+			flushBuf(token.TEXT)
 			if i+1 < len(line) && line[i+1] == '*' {
-				flushBuf(token.TokenText)
 				end := l.findClosing(line, i+2, "**")
 
 				if end != -1 {
 					tok := token.Token{
-						Type:     token.TokenBold,
+						Type:     token.BOLD,
 						Children: l.lexInline(line[i+2 : end]),
 					}
 					tokens = append(tokens, tok)
 					i = end + len("**")
 				} else {
 					buf = append(buf, '*', '*')
+					i += 2
+				}
+			} else { // Case of italic text
+				end := l.findClosing(line, i+2, "*")
+
+				if end != -1 {
+					tok := token.Token{
+						Type:     token.ITALIC,
+						Children: l.lexInline(line[i+1 : end]),
+					}
+					tokens = append(tokens, tok)
+					i = end + len("*")
+				} else {
+					buf = append(buf, '*')
 					i += 2
 				}
 			}
@@ -104,11 +116,15 @@ func (l *Lexer) lexInline(line string) []token.Token {
 		}
 	}
 
-	flushBuf(token.TokenText)
+	flushBuf(token.TEXT)
 	return tokens
 }
 
 func (l *Lexer) findClosing(s string, start int, delim string) int {
+	if start > len(s) {
+		return -1
+	}
+
 	idx := strings.Index(s[start:], delim)
 	if idx == -1 {
 		return idx
