@@ -51,6 +51,22 @@ func (l *Lexer) lexLine(line string) []token.Token {
 	return tokens
 }
 
+func (l *Lexer) treatHeader(line string) (bool, int) {
+	level := 0
+	pos := 0
+
+	for pos < len(line) && line[pos] == '#' {
+		level++
+		pos++
+	}
+
+	if pos < len(line) && line[pos] == ' ' {
+		return true, level
+	}
+
+	return false, 0
+}
+
 func (l *Lexer) lexHeader(line string) token.Token {
 	pos := 0
 	level := 0
