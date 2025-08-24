@@ -31,16 +31,24 @@ func (l *Lexer) Lex() []token.Token {
 	return tokens
 }
 
-func (l *Lexer) lexLine(line string) token.Token {
-	var tok token.Token
+func (l *Lexer) lexLine(line string) []token.Token {
+	tokens := []token.Token{}
+	i := 0
 
-	if len(line) > 0 && line[0] == '#' {
-		tok = l.lexHeader(line)
+	isHeader, level := l.treatHeader(line)
+	if isHeader {
+		for range level {
+			tokens = append(tokens, token.Token{Type: token.HEADER, Value: "#"})
+		}
+
+		i += level
 	} else {
-		tok = token.Token{Type: token.PARAGRAPH, Children: l.lexInline(line)}
+		tokens = append(tokens, token.Token{Type: token.PARAGRAPH})
 	}
 
-	return tok
+	tokens = append(tokens, l.lexInline(line, level)...)
+
+	return tokens
 }
 
 func (l *Lexer) lexHeader(line string) token.Token {
