@@ -110,6 +110,19 @@ func (l *Lexer) lexInline(line string) []token.Token {
 					i += 2
 				}
 			}
+		case '`':
+			// Case of code span
+			flushBuf(token.TEXT)
+			end := l.findClosing(line, i+1, "`")
+
+			if end != -1 {
+				tok := token.Token{
+					Type:     token.CODESPAN,
+					Children: l.lexInline(line[i+1 : end]),
+				}
+				tokens = append(tokens, tok)
+				i = end + len("`")
+			}
 		default:
 			buf = append(buf, r)
 			i += size
