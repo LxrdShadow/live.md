@@ -85,76 +85,47 @@ func (l *Lexer) lexHeader(line string) token.Token {
 	}
 }
 
-func (l *Lexer) lexInline(line string) []token.Token {
+func (l *Lexer) lexInline(line string, start int) []token.Token {
 	tokens := []token.Token{}
 	buf := []rune{}
 
-	flushBuf := func(tt token.TokenType) {
+	flushBuf := func() {
 		if len(buf) > 0 {
 			tokens = append(tokens, token.Token{
-				Type:  tt,
+				Type:  token.TEXT,
 				Value: string(buf),
 			})
 			buf = []rune{}
 		}
 	}
 
-	for i := 0; i < len(line); {
+	for i := start; i < len(line); {
 		r, size := utf8.DecodeRuneInString(line[i:])
 
 		switch r {
 		case '*':
-			// Case of bold text
-			flushBuf(token.TEXT)
+			flushBuf()
 			if i+1 < len(line) && line[i+1] == '*' {
-				end := l.findClosing(line, i+2, "**")
-
-				if end != -1 {
-					tok := token.Token{
-						Type:     token.BOLD,
-						Children: l.lexInline(line[i+2 : end]),
-					}
-					tokens = append(tokens, tok)
-					i = end + len("**")
-				} else {
-					buf = append(buf, '*', '*')
-					i += 2
-				}
-			} else { // Case of italic text
-				end := l.findClosing(line, i+2, "*")
-
-				if end != -1 {
-					tok := token.Token{
-						Type:     token.ITALIC,
-						Children: l.lexInline(line[i+1 : end]),
-					}
-					tokens = append(tokens, tok)
-					i = end + len("*")
-				} else {
-					buf = append(buf, '*')
-					i += 2
-				}
+				tok := token.Token{Type: token.BOLD, Value: "**"}
+				tokens = append(tokens, tok)
+				i += len("**")
+			} else {
+				tok := token.Token{Type: token.ITALIC, Value: "*"}
+				tokens = append(tokens, tok)
+				i += size
 			}
 		case '`':
-			// Case of code span
-			flushBuf(token.TEXT)
-			end := l.findClosing(line, i+1, "`")
-
-			if end != -1 {
-				tok := token.Token{
-					Type:     token.CODESPAN,
-					Children: l.lexInline(line[i+1 : end]),
-				}
-				tokens = append(tokens, tok)
-				i = end + len("`")
-			}
+			flushBuf()
+			tok := token.Token{Type: token.CODESPAN, Value: "*"}
+			tokens = append(tokens, tok)
+			i += size
 		default:
 			buf = append(buf, r)
 			i += size
 		}
 	}
 
-	flushBuf(token.TEXT)
+	flushBuf()
 	return tokens
 }
 
