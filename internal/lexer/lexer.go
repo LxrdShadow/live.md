@@ -20,12 +20,13 @@ func New(input string) *Lexer {
 func (l *Lexer) Lex() []token.Token {
 	tokens := []token.Token{}
 
-	r := bytes.NewReader([]byte(l.input))
-	scanner := bufio.NewScanner(r)
+	reader := bytes.NewReader([]byte(l.input))
+	scanner := bufio.NewScanner(reader)
 
 	for scanner.Scan() {
-		tokens = append(tokens, l.lexLine(scanner.Text()))
+		tokens = append(tokens, l.lexLine(scanner.Text())...)
 	}
+	tokens = append(tokens, token.Token{Type: token.EOF})
 
 	return tokens
 }
