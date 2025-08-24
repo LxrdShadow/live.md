@@ -9,6 +9,7 @@ type TokenType string
 
 const (
 	EOF       = "TokenEOF"
+	NEWLINE   = "TokenNEWLINE"
 	HEADER    = "TokenHEADER"
 	PARAGRAPH = "TokenPARAGRAPH"
 	TEXT      = "TokenTEXT"
