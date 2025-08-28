@@ -8,3 +8,9 @@ const (
 	ITALIC    = "ITALIC"
 	TEXT      = "TEXT"
 )
+
+type Node struct {
+	Type     string
+	Value    string
+	Children []Node
+}
