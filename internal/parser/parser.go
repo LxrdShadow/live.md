@@ -10,3 +10,10 @@ type Parser struct {
 func New(tokens []token.Token) *Parser {
 	return &Parser{tokens: tokens}
 }
+
+func (p *Parser) current() token.Token {
+	if p.pos >= len(p.tokens) {
+		return token.Token{Type: token.EOF}
+	}
+	return p.tokens[p.pos]
+}
