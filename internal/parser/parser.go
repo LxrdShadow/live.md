@@ -17,3 +17,9 @@ func (p *Parser) current() token.Token {
 	}
 	return p.tokens[p.pos]
 }
+
+func (p *Parser) consume() token.Token {
+	tok := p.current()
+	p.pos++
+	return tok
+}
