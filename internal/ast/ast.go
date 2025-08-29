@@ -6,12 +6,12 @@ import (
 )
 
 const (
-	DOCUMENT  = "DOCUMENT"
-	HEADER    = "HEADER"
-	PARAGRAPH = "PARAGRAPH"
-	BOLD      = "BOLD"
-	ITALIC    = "ITALIC"
-	TEXT      = "TEXT"
+	DOCUMENT  = "AstDOCUMENT"
+	HEADER    = "AstHEADER"
+	PARAGRAPH = "AstPARAGRAPH"
+	BOLD      = "AstBOLD"
+	ITALIC    = "AstITALIC"
+	TEXT      = "AstTEXT"
 )
 
 type Node struct {
