@@ -17,7 +17,7 @@ const (
 type Node struct {
 	Type     string
 	Value    string
-	Children []Node
+	Children []*Node
 	Level    int
 }
 
