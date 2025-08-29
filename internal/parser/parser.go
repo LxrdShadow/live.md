@@ -36,3 +36,28 @@ func (p *Parser) Parse() *ast.Node {
 
 	return root
 }
+
+func (p *Parser) parseBlock() *ast.Node {
+	tok := p.current()
+	switch tok.Type {
+	case token.HEADER:
+		level := p.getHeaderLevel(p.pos)
+		for range level {
+			p.consume()
+		}
+		return &ast.Node{Type: ast.HEADER, Level: level}
+	default:
+		p.consume()
+		return &ast.Node{Type: ast.PARAGRAPH}
+	}
+}
+
+func (p *Parser) getHeaderLevel(start int) int {
+	pos := 0
+
+	for pos < len(p.tokens[start:]) && p.tokens[pos].Type == token.HEADER {
+		pos++
+	}
+
+	return pos
+}
