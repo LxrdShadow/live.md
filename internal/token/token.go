@@ -16,6 +16,10 @@ const (
 	BOLD      = "TokenBOLD"
 	ITALIC    = "TokenITALIC"
 	CODESPAN  = "TokenCODESPAN"
+
+	HASHTAG  = "#"
+	ASTERISK = "*"
+	BACKTICK = "`"
 )
 
 type Token struct {
