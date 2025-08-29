@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+type AstType string
+
 const (
 	DOCUMENT  = "AstDOCUMENT"
 	HEADER    = "AstHEADER"
@@ -15,7 +17,7 @@ const (
 )
 
 type Node struct {
-	Type     string
+	Type     AstType
 	Value    string
 	Children []*Node
 	Level    int
@@ -35,5 +37,5 @@ func (n *Node) String() string {
 		return fmt.Sprintf("%s(\"%s\")", n.Type, n.Value)
 	}
 
-	return n.Type
+	return string(n.Type)
 }
