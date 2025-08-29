@@ -8,13 +8,18 @@ import (
 type TokenType string
 
 const (
-	EOF       = "EOF"
-	HEADER    = "HEADER"
-	PARAGRAPH = "PARAGRAPH"
-	TEXT      = "TEXT"
-	BOLD      = "BOLD"
-	ITALIC    = "ITALIC"
-	CODESPAN  = "CODESPAN"
+	EOF       = "TokenEOF"
+	NEWLINE   = "TokenNEWLINE"
+	HEADER    = "TokenHEADER"
+	PARAGRAPH = "TokenPARAGRAPH"
+	TEXT      = "TokenTEXT"
+	BOLD      = "TokenBOLD"
+	ITALIC    = "TokenITALIC"
+	CODESPAN  = "TokenCODESPAN"
+
+	HASHTAG  = "#"
+	ASTERISK = "*"
+	BACKTICK = "`"
 )
 
 type Token struct {
