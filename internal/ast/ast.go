@@ -21,7 +21,7 @@ type Node struct {
 	Level    int
 }
 
-func (n Node) String() string {
+func (n *Node) String() string {
 	if len(n.Children) > 0 {
 		childrenStr := []string{}
 

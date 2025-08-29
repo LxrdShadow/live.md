@@ -1,6 +1,9 @@
 package parser
 
-import "github.com/LxrdShadow/live.md/internal/token"
+import (
+	"github.com/LxrdShadow/live.md/internal/ast"
+	"github.com/LxrdShadow/live.md/internal/token"
+)
 
 type Parser struct {
 	tokens []token.Token
@@ -22,4 +25,14 @@ func (p *Parser) consume() token.Token {
 	tok := p.current()
 	p.pos++
 	return tok
+}
+
+func (p *Parser) Parse() *ast.Node {
+	root := &ast.Node{Type: ast.DOCUMENT}
+
+	for p.current().Type != token.EOF {
+		root.Children = append(root.Children, p.parseBlock())
+	}
+
+	return root
 }
