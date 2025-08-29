@@ -13,4 +13,5 @@ type Node struct {
 	Type     string
 	Value    string
 	Children []Node
+	Level    int
 }
