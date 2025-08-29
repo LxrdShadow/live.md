@@ -22,7 +22,15 @@ func (l *Lexer) Lex() []token.Token {
 	reader := bytes.NewReader([]byte(l.input))
 	scanner := bufio.NewScanner(reader)
 
+	firstLine := true
 	for scanner.Scan() {
+		if !firstLine {
+			// add newline token before the next line
+			tokens = append(tokens, l.lexLine(scanner.Text())...)
+		} else {
+			firstLine = false
+		}
+
 		tokens = append(tokens, l.lexLine(scanner.Text())...)
 	}
 	tokens = append(tokens, token.Token{Type: token.EOF})
