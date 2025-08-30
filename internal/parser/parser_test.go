@@ -9,8 +9,7 @@ import (
 )
 
 func TestParsingHeader(t *testing.T) {
-	input := `# **Hello cruel
-*World* of ***mine***`
+	input := "# **Hello cruel \n`*World*` of ***mine***"
 	l := lexer.New(input)
 	tokens := l.Lex()
 	fmt.Println(tokens)
