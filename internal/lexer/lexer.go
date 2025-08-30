@@ -26,7 +26,7 @@ func (l *Lexer) Lex() []token.Token {
 	for scanner.Scan() {
 		if !firstLine {
 			// add newline token before the next line
-			tokens = append(tokens, l.lexLine(scanner.Text())...)
+			tokens = append(tokens, token.Token{Type: token.NEWLINE})
 		} else {
 			firstLine = false
 		}
