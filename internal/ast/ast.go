@@ -8,12 +8,13 @@ import (
 type AstType string
 
 const (
-	DOCUMENT  = "AstDOCUMENT"
-	HEADER    = "AstHEADER"
-	PARAGRAPH = "AstPARAGRAPH"
-	BOLD      = "AstBOLD"
-	ITALIC    = "AstITALIC"
-	TEXT      = "AstTEXT"
+	DOCUMENT   = "AstDOCUMENT"
+	HEADER     = "AstHEADER"
+	PARAGRAPH  = "AstPARAGRAPH"
+	BOLD       = "AstBOLD"
+	ITALIC     = "AstITALIC"
+	BOLDITALIC = "AstBOLDITALIC"
+	TEXT       = "AstTEXT"
 )
 
 type Node struct {
