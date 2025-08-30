@@ -15,6 +15,7 @@ const (
 	ITALIC     = "AstITALIC"
 	BOLDITALIC = "AstBOLDITALIC"
 	TEXT       = "AstTEXT"
+	CODESPAN   = "AstCODESPAN"
 )
 
 type Node struct {
