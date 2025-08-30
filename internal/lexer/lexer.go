@@ -95,9 +95,15 @@ func (l *Lexer) lexInline(line string, start int) []token.Token {
 		case '*':
 			flushBuf()
 			if i+1 < len(line) && line[i+1] == '*' {
-				tok := token.Token{Type: token.BOLD, Value: "**"}
-				tokens = append(tokens, tok)
-				i += len("**")
+				if i+2 < len(line) && line[i+2] == '*' {
+					tok := token.Token{Type: token.BOLDITALIC, Value: "***"}
+					tokens = append(tokens, tok)
+					i += len("***")
+				} else {
+					tok := token.Token{Type: token.BOLD, Value: "**"}
+					tokens = append(tokens, tok)
+					i += len("**")
+				}
 			} else {
 				tok := token.Token{Type: token.ITALIC, Value: "*"}
 				tokens = append(tokens, tok)
