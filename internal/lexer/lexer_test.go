@@ -11,7 +11,7 @@ func TestLexingHeader(t *testing.T) {
 	l := New(input)
 	tokens := l.Lex()
 
-	if len(tokens) != 11 {
-		t.Fatalf("len(tokens) is not %d. got=%d", 11, len(tokens))
+	if len(tokens) != 12 {
+		t.Fatalf("len(tokens) is not %d. got=%d", 12, len(tokens))
 	}
 }
