@@ -1,8 +1,6 @@
 package lexer
 
 import (
-	"bufio"
-	"bytes"
 	"unicode/utf8"
 
 	"github.com/LxrdShadow/live.md/internal/token"
@@ -21,21 +19,17 @@ func New(input string) *Lexer {
 func (l *Lexer) Lex() []token.Token {
 	tokens := []token.Token{}
 
-	reader := bytes.NewReader([]byte(l.input))
-	scanner := bufio.NewScanner(reader)
+	buf := []rune{}
 
-	firstLine := true
-	for scanner.Scan() {
-		if !firstLine {
-			// add newline token before the next line
-			tokens = append(tokens, token.Token{Type: token.NEWLINE})
-		} else {
-			firstLine = false
+	flushBuf := func() {
+		if len(buf) > 0 {
+			tokens = append(tokens, token.Token{
+				Type:  token.TEXT,
+				Value: string(buf),
+			})
+			clear(buf)
 		}
-
-		tokens = append(tokens, l.lexLine(scanner.Text())...)
 	}
-	tokens = append(tokens, token.Token{Type: token.EOF})
 
 	return tokens
 }
