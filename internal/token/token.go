@@ -8,14 +8,15 @@ import (
 type TokenType string
 
 const (
-	EOF       = "TokenEOF"
-	NEWLINE   = "TokenNEWLINE"
-	HEADER    = "TokenHEADER"
-	PARAGRAPH = "TokenPARAGRAPH"
-	TEXT      = "TokenTEXT"
-	BOLD      = "TokenBOLD"
-	ITALIC    = "TokenITALIC"
-	CODESPAN  = "TokenCODESPAN"
+	EOF        = "TokenEOF"
+	NEWLINE    = "TokenNEWLINE"
+	HEADER     = "TokenHEADER"
+	PARAGRAPH  = "TokenPARAGRAPH"
+	TEXT       = "TokenTEXT"
+	BOLD       = "TokenBOLD"
+	ITALIC     = "TokenITALIC"
+	BOLDITALIC = "TokenBOLDITALIC"
+	CODESPAN   = "TokenCODESPAN"
 
 	HASHTAG  = "#"
 	ASTERISK = "*"
