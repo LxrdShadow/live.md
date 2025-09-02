@@ -1,6 +1,7 @@
 package lexer
 
 import (
+	"strings"
 	"unicode/utf8"
 
 	"github.com/LxrdShadow/live.md/internal/token"
@@ -18,7 +19,6 @@ func New(input string) *Lexer {
 
 func (l *Lexer) Lex() []token.Token {
 	tokens := []token.Token{}
-
 	buf := []rune{}
 
 	flushBuf := func() {
@@ -27,7 +27,7 @@ func (l *Lexer) Lex() []token.Token {
 				Type:  token.TEXT,
 				Value: string(buf),
 			})
-			clear(buf)
+			buf = []rune{}
 		}
 	}
 
@@ -52,6 +52,21 @@ func (l *Lexer) Lex() []token.Token {
 		case '*':
 			flushBuf()
 
+			if l.pos+1 < len(l.input) && l.input[l.pos+1] == '*' {
+				if l.pos+2 < len(l.input) && l.input[l.pos+2] == '*' {
+					tok := token.Token{Type: token.BOLDITALIC, Value: "***"}
+					tokens = append(tokens, tok)
+					l.pos += len("***")
+				} else {
+					tok := token.Token{Type: token.BOLD, Value: "**"}
+					tokens = append(tokens, tok)
+					l.pos += len("**")
+				}
+			} else {
+				tok := token.Token{Type: token.ITALIC, Value: "*"}
+				tokens = append(tokens, tok)
+				l.pos += size
+			}
 		case '`':
 			flushBuf()
 			tok := token.Token{Type: token.CODESPAN, Value: "`"}
