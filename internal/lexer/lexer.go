@@ -31,7 +31,61 @@ func (l *Lexer) Lex() []token.Token {
 		}
 	}
 
+	for l.pos < len(l.input) {
+		r, size := utf8.DecodeRuneInString(l.remaining())
+
+		switch r {
+		case '#':
+			isHeader, level := l.treatHeaderToken(tokens)
+			if isHeader {
+				flushBuf()
+
+				for range level {
+					tokens = append(tokens, token.Token{Type: token.HEADER, Value: "#"})
+				}
+
+				l.pos += level
+			} else {
+				buf = append(buf, r)
+				l.pos += size
+			}
+		case '*':
+			flushBuf()
+
+		case '`':
+			flushBuf()
+			tok := token.Token{Type: token.CODESPAN, Value: "`"}
+			tokens = append(tokens, tok)
+			l.pos += size
+		default:
+			buf = append(buf, r)
+			l.pos += size
+		}
+	}
+
+	flushBuf()
 	return tokens
+}
+
+func (l *Lexer) treatHeaderToken(tokens []token.Token) (bool, int) {
+	if len(tokens) > 0 && tokens[len(tokens)-1].Type != token.NEWLINE {
+		return false, 0
+	}
+
+	level := 0
+	pos := 0
+	remaining := l.remaining()
+
+	for pos < len(remaining) && remaining[pos] == '#' {
+		level++
+		pos++
+	}
+
+	if pos < len(remaining) && remaining[pos] == ' ' {
+		return true, level
+	}
+
+	return false, 0
 }
 
 func (l *Lexer) remaining() string {
