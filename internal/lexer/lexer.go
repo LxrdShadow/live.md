@@ -69,8 +69,31 @@ func (l *Lexer) Lex() []token.Token {
 			}
 		case '`':
 			flushBuf()
-			tok := token.Token{Type: token.CODESPAN, Value: "`"}
-			tokens = append(tokens, tok)
+			count := 1
+			for l.pos+count < len(l.input) && l.input[l.pos+count] == '`' {
+				count++
+			}
+
+			delim := strings.Repeat("`", count)
+			l.pos += count
+
+			start := l.pos
+			for {
+				if l.pos >= len(l.input) {
+					tokens = append(tokens, token.Token{Type: token.TEXT, Value: delim + l.input[start:]})
+					break
+				}
+
+				if strings.HasPrefix(l.input[l.pos:], delim) {
+					tokens = append(tokens, token.Token{Type: token.CODESPAN, Value: l.input[start:l.pos]})
+					l.pos += count
+					break
+				}
+				l.pos++
+			}
+		case '\n':
+			flushBuf()
+			tokens = append(tokens, token.Token{Type: token.NEWLINE})
 			l.pos += size
 		default:
 			buf = append(buf, r)
