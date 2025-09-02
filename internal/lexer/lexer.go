@@ -40,6 +40,10 @@ func (l *Lexer) Lex() []token.Token {
 	return tokens
 }
 
+func (l *Lexer) remaining() string {
+	return l.input[l.pos:]
+}
+
 func (l *Lexer) lexLine(line string) []token.Token {
 	tokens := []token.Token{}
 	i := 0
