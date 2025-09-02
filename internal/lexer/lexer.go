@@ -10,6 +10,7 @@ import (
 
 type Lexer struct {
 	input string
+	pos   int
 }
 
 func New(input string) *Lexer {
