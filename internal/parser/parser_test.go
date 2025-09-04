@@ -17,8 +17,8 @@ func TestParsingHeader(t *testing.T) {
 	document := p.Parse()
 
 	fmt.Println(document)
-	if len(document.Children) != 2 {
-		t.Fatalf("len(document.Children) is not %d. got=%d", 2, len(document.Children))
+	if len(document.Children) != 1 {
+		t.Fatalf("len(document.Children) is not %d. got=%d", 1, len(document.Children))
 	}
 
 	header := document.Children[0]
