@@ -10,11 +10,10 @@ import (
 type Lexer struct {
 	input string
 	pos   int
-	buf   []rune
 }
 
 func New(input string) *Lexer {
-	return &Lexer{input: input, buf: []rune{}}
+	return &Lexer{input: input}
 }
 
 func (l *Lexer) Lex() []token.Token {
