@@ -1,8 +1,7 @@
 package lexer
 
 import (
-	"bufio"
-	"bytes"
+	"strings"
 	"unicode/utf8"
 
 	"github.com/LxrdShadow/live.md/internal/token"
@@ -10,6 +9,7 @@ import (
 
 type Lexer struct {
 	input string
+	pos   int
 }
 
 func New(input string) *Lexer {
@@ -17,64 +17,6 @@ func New(input string) *Lexer {
 }
 
 func (l *Lexer) Lex() []token.Token {
-	tokens := []token.Token{}
-
-	reader := bytes.NewReader([]byte(l.input))
-	scanner := bufio.NewScanner(reader)
-
-	firstLine := true
-	for scanner.Scan() {
-		if !firstLine {
-			// add newline token before the next line
-			tokens = append(tokens, token.Token{Type: token.NEWLINE})
-		} else {
-			firstLine = false
-		}
-
-		tokens = append(tokens, l.lexLine(scanner.Text())...)
-	}
-	tokens = append(tokens, token.Token{Type: token.EOF})
-
-	return tokens
-}
-
-func (l *Lexer) lexLine(line string) []token.Token {
-	tokens := []token.Token{}
-	i := 0
-
-	isHeader, level := l.treatHeader(line)
-	if isHeader {
-		for range level {
-			tokens = append(tokens, token.Token{Type: token.HEADER, Value: "#"})
-		}
-
-		i += level
-	} else {
-		tokens = append(tokens, token.Token{Type: token.PARAGRAPH})
-	}
-
-	tokens = append(tokens, l.lexInline(line, level)...)
-
-	return tokens
-}
-
-func (l *Lexer) treatHeader(line string) (bool, int) {
-	level := 0
-	pos := 0
-
-	for pos < len(line) && line[pos] == '#' {
-		level++
-		pos++
-	}
-
-	if pos < len(line) && line[pos] == ' ' {
-		return true, level
-	}
-
-	return false, 0
-}
-
-func (l *Lexer) lexInline(line string, start int) []token.Token {
 	tokens := []token.Token{}
 	buf := []rune{}
 
@@ -88,38 +30,101 @@ func (l *Lexer) lexInline(line string, start int) []token.Token {
 		}
 	}
 
-	for i := start; i < len(line); {
-		r, size := utf8.DecodeRuneInString(line[i:])
+	for l.pos < len(l.input) {
+		r, size := utf8.DecodeRuneInString(l.remaining())
 
 		switch r {
+		case '#':
+			isHeader, level := l.treatHeaderToken(tokens)
+			if isHeader {
+				flushBuf()
+
+				for range level {
+					tokens = append(tokens, token.Token{Type: token.HEADER, Value: "#"})
+				}
+
+				l.pos += level
+			} else {
+				buf = append(buf, r)
+				l.pos += size
+			}
 		case '*':
 			flushBuf()
-			if i+1 < len(line) && line[i+1] == '*' {
-				if i+2 < len(line) && line[i+2] == '*' {
+
+			if l.pos+1 < len(l.input) && l.input[l.pos+1] == '*' {
+				if l.pos+2 < len(l.input) && l.input[l.pos+2] == '*' {
 					tok := token.Token{Type: token.BOLDITALIC, Value: "***"}
 					tokens = append(tokens, tok)
-					i += len("***")
+					l.pos += len("***")
 				} else {
 					tok := token.Token{Type: token.BOLD, Value: "**"}
 					tokens = append(tokens, tok)
-					i += len("**")
+					l.pos += len("**")
 				}
 			} else {
 				tok := token.Token{Type: token.ITALIC, Value: "*"}
 				tokens = append(tokens, tok)
-				i += size
+				l.pos += size
 			}
 		case '`':
 			flushBuf()
-			tok := token.Token{Type: token.CODESPAN, Value: "*"}
-			tokens = append(tokens, tok)
-			i += size
+			count := 1
+			for l.pos+count < len(l.input) && l.input[l.pos+count] == '`' {
+				count++
+			}
+
+			delim := strings.Repeat("`", count)
+			l.pos += count
+
+			start := l.pos
+			for {
+				if l.pos >= len(l.input) {
+					tokens = append(tokens, token.Token{Type: token.TEXT, Value: delim + l.input[start:]})
+					break
+				}
+
+				if strings.HasPrefix(l.input[l.pos:], delim) {
+					tokens = append(tokens, token.Token{Type: token.CODESPAN, Value: l.input[start:l.pos]})
+					l.pos += count
+					break
+				}
+				l.pos++
+			}
+		case '\n':
+			flushBuf()
+			tokens = append(tokens, token.Token{Type: token.NEWLINE})
+			l.pos += size
 		default:
 			buf = append(buf, r)
-			i += size
+			l.pos += size
 		}
 	}
 
 	flushBuf()
 	return tokens
+}
+
+func (l *Lexer) treatHeaderToken(tokens []token.Token) (bool, int) {
+	if len(tokens) > 0 && tokens[len(tokens)-1].Type != token.NEWLINE {
+		return false, 0
+	}
+
+	level := 0
+	pos := 0
+	remaining := l.remaining()
+
+	for pos < len(remaining) && remaining[pos] == '#' {
+		level++
+		pos++
+	}
+
+	if pos < len(remaining) && remaining[pos] == ' ' {
+		return true, level
+	}
+
+	return false, 0
+}
+
+func (l *Lexer) remaining() string {
+	return l.input[l.pos:]
 }
