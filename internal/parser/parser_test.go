@@ -33,3 +33,18 @@ func TestParsingHeader(t *testing.T) {
 		t.Fatalf("document.Children[1].Type is not %s. got=%s", ast.PARAGRAPH, document.Children[1].Type)
 	}
 }
+
+func TestParsingCodeSpan(t *testing.T) {
+	input := "``This\nis\na\ncodespan``"
+
+	l := lexer.New(input)
+	tokens := l.Lex()
+	fmt.Println(tokens)
+	p := New(tokens)
+	document := p.Parse()
+
+	fmt.Println(document)
+	if len(document.Children) != 1 {
+		t.Fatalf("len(document.Children) is not %d. got=%d", 1, len(document.Children))
+	}
+}
