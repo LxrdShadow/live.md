@@ -124,19 +124,10 @@ func (p *Parser) parseInlineUntil(stop token.TokenType) []*ast.Node {
 				})
 			}
 		case token.CODESPAN:
-			end := p.findClosing(token.CODESPAN)
-
-			if end != -1 {
-				nodes = append(nodes, &ast.Node{
-					Type:     ast.CODESPAN,
-					Children: p.parseInlineUntil(token.CODESPAN),
-				})
-			} else {
-				nodes = append(nodes, &ast.Node{
-					Type:  ast.TEXT,
-					Value: tok.Value,
-				})
-			}
+			nodes = append(nodes, &ast.Node{
+				Type:  ast.CODESPAN,
+				Value: tok.Value,
+			})
 		default:
 			nodes = append(nodes, &ast.Node{
 				Type:  ast.TEXT,
