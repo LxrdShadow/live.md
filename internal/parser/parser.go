@@ -82,6 +82,44 @@ func (p *Parser) findClosing(t token.TokenType) int {
 	return -1
 }
 
+func (p *Parser) parseInline(stop token.TokenType) *ast.Node {
+	// consume the opening marker
+	start := p.consume()
+
+	node := &ast.Node{Type: tokenToAstType(start.Type)}
+
+	// collect children until we see the same marker or EOF/NEWLINE
+	for p.current().Type != stop &&
+		p.current().Type != token.NEWLINE &&
+		p.current().Type != token.EOF {
+
+		tok := p.current()
+		switch tok.Type {
+		case token.BOLD, token.ITALIC, token.BOLDITALIC:
+			node.Children = append(node.Children, p.parseInline(tok.Type))
+		case token.CODESPAN:
+			p.consume()
+			node.Children = append(node.Children, &ast.Node{
+				Type:  ast.CODESPAN,
+				Value: tok.Value,
+			})
+		default:
+			p.consume()
+			node.Children = append(node.Children, &ast.Node{
+				Type:  ast.TEXT,
+				Value: tok.Value,
+			})
+		}
+	}
+
+	// consume the closing marker if found
+	if p.current().Type == stop {
+		p.consume()
+	}
+
+	return node
+}
+
 func (p *Parser) parseInlineUntil(stop token.TokenType) []*ast.Node {
 	nodes := []*ast.Node{}
 
