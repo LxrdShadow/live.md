@@ -149,3 +149,22 @@ func (p *Parser) parseInlineUntil(stop token.TokenType) []*ast.Node {
 
 	return nodes
 }
+
+func tokenToAstType(tt token.TokenType) ast.NodeType {
+	switch tt {
+	case token.BOLD:
+		return ast.BOLD
+	case token.ITALIC:
+		return ast.ITALIC
+	case token.BOLDITALIC:
+		return ast.BOLDITALIC
+	case token.CODESPAN:
+		return ast.CODESPAN
+	case token.HEADER:
+		return ast.HEADER
+	case token.PARAGRAPH:
+		return ast.PARAGRAPH
+	default:
+		return ast.TEXT
+	}
+}
