@@ -54,7 +54,7 @@ func (p *Parser) parseBlock() *ast.Node {
 		}
 		return &ast.Node{Type: ast.HEADER, Level: level, Children: p.parseInlineUntil(token.NEWLINE)}
 	default:
-		return &ast.Node{Type: ast.PARAGRAPH, Children: p.parseInlineUntil(token.NEWLINE)}
+		return &ast.Node{Type: ast.PARAGRAPH, Children: p.parseParagraph()}
 	}
 }
 
