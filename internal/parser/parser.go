@@ -82,6 +82,55 @@ func (p *Parser) findClosing(t token.TokenType) int {
 	return -1
 }
 
+func (p *Parser) parseParagraph() []*ast.Node {
+	nodes := []*ast.Node{}
+
+	for {
+		if p.current().Type == token.EOF {
+			break
+		}
+
+		if p.current().Type == token.NEWLINE {
+			// if there's 2 newlines, treat it as a break (hard break, paragraph end)
+			if p.peek().Type == token.NEWLINE {
+				// consume the 2 newlines
+				p.consume()
+				p.consume()
+				break
+			}
+
+			// if there's just 1 newline, treat it as a space (soft break)
+			nodes = append(nodes, &ast.Node{
+				Type:  ast.TEXT,
+				Value: " ",
+			})
+			p.consume()
+			continue
+		}
+
+		// otherwise parse inline as usual
+		tok := p.current()
+		switch tok.Type {
+		case token.BOLD, token.ITALIC, token.BOLDITALIC:
+			nodes = append(nodes, p.parseInline(tok.Type))
+		case token.CODESPAN:
+			p.consume()
+			nodes = append(nodes, &ast.Node{
+				Type:  ast.CODESPAN,
+				Value: tok.Value,
+			})
+		default:
+			p.consume()
+			nodes = append(nodes, &ast.Node{
+				Type:  ast.TEXT,
+				Value: tok.Value,
+			})
+		}
+	}
+
+	return nodes
+}
+
 func (p *Parser) parseInline(stop token.TokenType) *ast.Node {
 	// consume the opening marker
 	start := p.consume()
