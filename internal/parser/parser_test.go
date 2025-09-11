@@ -9,7 +9,7 @@ import (
 )
 
 func TestParsingHeader(t *testing.T) {
-	input := "# **Hello cruel \n`*World*` of ***mine***"
+	input := "# **Hello cruel \n`*World*` of ***mine***\n\nMultiline\nParagraph"
 	l := lexer.New(input)
 	tokens := l.Lex()
 	fmt.Println(tokens)
@@ -17,8 +17,8 @@ func TestParsingHeader(t *testing.T) {
 	document := p.Parse()
 
 	fmt.Println(document)
-	if len(document.Children) != 2 {
-		t.Fatalf("len(document.Children) is not %d. got=%d", 2, len(document.Children))
+	if len(document.Children) != 3 {
+		t.Fatalf("len(document.Children) is not %d. got=%d", 3, len(document.Children))
 	}
 
 	header := document.Children[0]
