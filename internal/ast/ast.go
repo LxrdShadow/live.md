@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-type AstType string
+type NodeType string
 
 const (
 	DOCUMENT   = "AstDOCUMENT"
@@ -19,7 +19,7 @@ const (
 )
 
 type Node struct {
-	Type     AstType
+	Type     NodeType
 	Value    string
 	Children []*Node
 	Level    int
