@@ -10,6 +10,7 @@ type Parser struct {
 	pos    int
 }
 
+// Initialize new parser
 func New(tokens []token.Token) *Parser {
 	return &Parser{tokens: tokens}
 }
@@ -61,6 +62,7 @@ func (p *Parser) parseBlock() *ast.Node {
 func (p *Parser) getHeaderLevel(start int) int {
 	pos := 0
 
+	// loop while there's still header tokens
 	for pos < len(p.tokens[start:]) && p.tokens[pos].Type == token.HEADER {
 		pos++
 	}
@@ -68,6 +70,7 @@ func (p *Parser) getHeaderLevel(start int) int {
 	return pos
 }
 
+// search for the token passed as argument and return its index if found, return -1 if not
 func (p *Parser) findClosing(t token.TokenType) int {
 	for pos := p.pos; pos < len(p.tokens); pos++ {
 		if p.tokens[pos].Type == token.NEWLINE {
