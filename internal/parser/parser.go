@@ -1,8 +1,6 @@
 package parser
 
 import (
-	"fmt"
-
 	"github.com/LxrdShadow/live.md/internal/ast"
 	"github.com/LxrdShadow/live.md/internal/token"
 )
@@ -118,8 +116,6 @@ func (p *Parser) parseParagraph() []*ast.Node {
 		switch tok.Type {
 		case token.BOLD, token.ITALIC, token.BOLDITALIC:
 			end := p.findClosing(tok.Type)
-			fmt.Println(tok.Type)
-			fmt.Println(end)
 
 			if end != -1 {
 				nodes = append(nodes, p.parseInline(tok.Type))
@@ -150,7 +146,6 @@ func (p *Parser) parseInline(stop token.TokenType) *ast.Node {
 	node := &ast.Node{Type: tokenToAstType(stop)}
 
 	// collect children until we see the same marker or EOF/NEWLINE
-	fmt.Println(p.tokens[p.pos:])
 	for p.current().Type != stop &&
 		p.current().Type != token.NEWLINE &&
 		p.current().Type != token.EOF {
