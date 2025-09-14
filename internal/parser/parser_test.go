@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/LxrdShadow/live.md/internal/ast"
@@ -12,11 +11,9 @@ func TestParsingHeader(t *testing.T) {
 	input := "# **Hello cruel \n`*World*` of ***mine***\n\nMultiline\nParagraph"
 	l := lexer.New(input)
 	tokens := l.Lex()
-	fmt.Println(tokens)
 	p := New(tokens)
 	document := p.Parse()
 
-	fmt.Println(document)
 	if len(document.Children) != 3 {
 		t.Fatalf("len(document.Children) is not %d. got=%d", 3, len(document.Children))
 	}
@@ -39,11 +36,9 @@ func TestParsingCodeSpan(t *testing.T) {
 
 	l := lexer.New(input)
 	tokens := l.Lex()
-	fmt.Println(tokens)
 	p := New(tokens)
 	document := p.Parse()
 
-	fmt.Println(document)
 	if len(document.Children) != 1 {
 		t.Fatalf("len(document.Children) is not %d. got=%d", 1, len(document.Children))
 	}
