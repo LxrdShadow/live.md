@@ -15,33 +15,23 @@ func NewHTMLRenderer() *HTMLRenderer {
 func (r *HTMLRenderer) renderNode(sb *strings.Builder, n *ast.Node) {
 	switch n.Type {
 	case ast.DOCUMENT:
-		for _, c := range n.Children {
-			r.renderNode(sb, c)
-		}
+		r.renderChildren(sb, n)
 	case ast.PARAGRAPH:
 		sb.WriteString("<p>")
-		for _, c := range n.Children {
-			r.renderNode(sb, c)
-		}
+		r.renderChildren(sb, n)
 		sb.WriteString("</p>\n")
 	case ast.HEADER:
 		opening, closing := getHeaderTags(n.Level)
 		sb.WriteString(opening)
-		for _, c := range n.Children {
-			r.renderNode(sb, c)
-		}
+		r.renderChildren(sb, n)
 		sb.WriteString(closing)
 	case ast.BOLD:
 		sb.WriteString("<strong>")
-		for _, c := range n.Children {
-			r.renderNode(sb, c)
-		}
+		r.renderChildren(sb, n)
 		sb.WriteString("</strong>")
 	case ast.ITALIC:
 		sb.WriteString("<em>")
-		for _, c := range n.Children {
-			r.renderNode(sb, c)
-		}
+		r.renderChildren(sb, n)
 		sb.WriteString("</em>")
 	case ast.CODESPAN:
 		sb.WriteString("<code>")
