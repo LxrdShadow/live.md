@@ -12,6 +12,12 @@ func NewHTMLRenderer() *HTMLRenderer {
 	return &HTMLRenderer{}
 }
 
+func (r *HTMLRenderer) Render(node *ast.Node) string {
+	var sb strings.Builder
+	r.renderNode(&sb, node)
+	return sb.String()
+}
+
 func (r *HTMLRenderer) renderNode(sb *strings.Builder, n *ast.Node) {
 	switch n.Type {
 	case ast.DOCUMENT:
