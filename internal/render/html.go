@@ -50,7 +50,7 @@ func (r *HTMLRenderer) renderNode(sb *strings.Builder, n *ast.Node) {
 
 func getHeaderTags(level int) (string, string) {
 	opening := "<h" + string(rune('0'+level)) + ">"
-	closing := "</h" + string(rune('0'+level)) + ">"
+	closing := "</h" + string(rune('0'+level)) + ">\n"
 	return opening, closing
 }
 
