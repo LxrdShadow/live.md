@@ -56,3 +56,9 @@ func (r *HTMLRenderer) renderNode(sb *strings.Builder, n *ast.Node) {
 		sb.WriteString(n.Value)
 	}
 }
+
+func getHeaderTags(level int) (string, string) {
+	opening := "<h" + string(rune('0'+level)) + ">"
+	closing := "</h" + string(rune('0'+level)) + ">"
+	return opening, closing
+}
