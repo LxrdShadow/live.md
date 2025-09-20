@@ -112,18 +112,25 @@ func (p *Parser) parseParagraph() []*ast.Node {
 		}
 
 		// otherwise parse inline as usual
-		tok := p.current()
+		tok := p.consume()
 		switch tok.Type {
 		case token.BOLD, token.ITALIC, token.BOLDITALIC:
-			nodes = append(nodes, p.parseInline(tok.Type))
+			end := p.findClosing(tok.Type)
+
+			if end != -1 {
+				nodes = append(nodes, p.parseInline(tok.Type))
+			} else {
+				nodes = append(nodes, &ast.Node{
+					Type:  ast.TEXT,
+					Value: tok.Value,
+				})
+			}
 		case token.CODESPAN:
-			p.consume()
 			nodes = append(nodes, &ast.Node{
 				Type:  ast.CODESPAN,
 				Value: tok.Value,
 			})
 		default:
-			p.consume()
 			nodes = append(nodes, &ast.Node{
 				Type:  ast.TEXT,
 				Value: tok.Value,
@@ -136,27 +143,32 @@ func (p *Parser) parseParagraph() []*ast.Node {
 
 func (p *Parser) parseInline(stop token.TokenType) *ast.Node {
 	// consume the opening marker
-	start := p.consume()
-
-	node := &ast.Node{Type: tokenToAstType(start.Type)}
+	node := &ast.Node{Type: tokenToAstType(stop)}
 
 	// collect children until we see the same marker or EOF/NEWLINE
 	for p.current().Type != stop &&
 		p.current().Type != token.NEWLINE &&
 		p.current().Type != token.EOF {
 
-		tok := p.current()
+		tok := p.consume()
 		switch tok.Type {
 		case token.BOLD, token.ITALIC, token.BOLDITALIC:
-			node.Children = append(node.Children, p.parseInline(tok.Type))
+			end := p.findClosing(tok.Type)
+
+			if end != -1 {
+				node.Children = append(node.Children, p.parseInline(tok.Type))
+			} else {
+				node.Children = append(node.Children, &ast.Node{
+					Type:  ast.TEXT,
+					Value: tok.Value,
+				})
+			}
 		case token.CODESPAN:
-			p.consume()
 			node.Children = append(node.Children, &ast.Node{
 				Type:  ast.CODESPAN,
 				Value: tok.Value,
 			})
 		default:
-			p.consume()
 			node.Children = append(node.Children, &ast.Node{
 				Type:  ast.TEXT,
 				Value: tok.Value,
