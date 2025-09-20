@@ -57,3 +57,9 @@ func getHeaderTags(level int) (string, string) {
 	closing := "</h" + string(rune('0'+level)) + ">"
 	return opening, closing
 }
+
+func (r *HTMLRenderer) renderChildren(sb *strings.Builder, n *ast.Node) {
+	for _, c := range n.Children {
+		r.renderNode(sb, c)
+	}
+}
