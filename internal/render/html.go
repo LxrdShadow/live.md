@@ -25,17 +25,12 @@ func (r *HTMLRenderer) renderNode(sb *strings.Builder, n *ast.Node) {
 		}
 		sb.WriteString("</p>\n")
 	case ast.HEADER:
-		sb.WriteString("<h")
-		sb.WriteString(string(rune('0' + n.Level))) // convert int to char
-		sb.WriteString(">")
-
+		opening, closing := getHeaderTags(n.Level)
+		sb.WriteString(opening)
 		for _, c := range n.Children {
 			r.renderNode(sb, c)
 		}
-
-		sb.WriteString("</h")
-		sb.WriteString(string(rune('0' + n.Level))) // convert int to char
-		sb.WriteString(">\n")
+		sb.WriteString(closing)
 	case ast.BOLD:
 		sb.WriteString("<strong>")
 		for _, c := range n.Children {
